@@ -78,6 +78,7 @@ void Texture::setWallPixel(int wallHeight, int wallWidth, int wallTop, float wal
 	if (texX < 0)
 		texX = 0;
 
+	//int startX = static_cast<int>(ray * wallWidth);
 	int startX = static_cast<int>(ray * wallWidth);
 	int endX = static_cast<int>(ray + 1) * wallWidth;
 

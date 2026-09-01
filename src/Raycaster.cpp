@@ -133,7 +133,7 @@ void Raycaster::castRays(const sf::Vector2f& position, float angle, float horizo
 			//	)
 			//);
 
-			float projectionScale = 6000.f;
+			float projectionScale = 9000.f;
 			float wallHeight = projectionScale / correctedDistance;
 			float wallWidth = SCREEN_WIDTH / _numRays;
 
