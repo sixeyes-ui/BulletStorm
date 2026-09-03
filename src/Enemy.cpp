@@ -2,12 +2,15 @@
 #include "include/Render.h"
 #include "include/Config.h"
 #include "include/Raycaster.h"
+#include "include/SoundManager.h"
 #include "include/Map.h"
 #include <iostream>
 
 Enemy::Enemy(const Vec2& coord, float angle) :
 	_coord(coord),
-	_angle(angle)
+	_angle(angle),
+	_health(100),
+	_alive(true)
 {
 	if (!_sprite.loadFromFile("assets/DFrame0.png"))
 	{
@@ -22,11 +25,36 @@ void Enemy::setPlayerPos(const sf::Vector2f& playerPos, float angle)
 	_playerAngle = angle;
 }
 
+void Enemy::takeDamage(int damage)
+{
+	if (!_alive)
+		return;
+
+	_health -= damage;
+
+	if (_health > 0)
+	{
+		SoundManager::playEnemyHurt();
+		std::cout << "Enemy hurt ! Health : " << _health << std::endl;
+	}
+
+	if (_health <= 0)
+	{
+		_health = 0;
+		_alive = false;
+
+		std::cout << "ENEMY DIED!" << std::endl;
+	}
+}
+
 void Enemy::update(float dt, float horizon)
 {
 	//float dt = 1.f / 60;
 
-	float enemySpeed = 50.f;
+	if (!_alive)
+		return;
+
+	float enemySpeed = 100.f;
 	float chaseDistance = 200.f;
 
 	float dx = _playerPos.x - _coord.x;
@@ -74,7 +102,7 @@ void Enemy::update(float dt, float horizon)
 		float normalized = (angleDifference + FOV / 2.f) / FOV;
 		float screenX = normalized * SCREEN_WIDTH;
 
-		float enemyHeight = 4000.f / enemyDistance;
+		float enemyHeight = 8000.f / enemyDistance;
 		float enemyWidth = enemyHeight * 0.6f;
 
 		int enemyLeft = static_cast<int>(screenX - enemyWidth / 2.f);

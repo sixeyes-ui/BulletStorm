@@ -2,7 +2,9 @@
 #include "include/Config.h"
 #include "include/Texture.h"
 #include "include/Render.h"
+#include "include/SoundManager.h"
 #include <iostream>
+#include <cmath>
 
 Game::Game() :
 	_window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "PixelCast"),
@@ -15,6 +17,9 @@ Game::Game() :
 	{
 		std::cout << "ERROR: Could not load textures!" << std::endl;
 	}
+
+	SoundManager::init();
+	SoundManager::playMusic();
 
 	_enemies.emplace_back(Vec2(600.f, 300.f), 0);
 	_enemies.emplace_back(Vec2(500.f, 400.f), 0);
@@ -31,6 +36,119 @@ Game::Game() :
 	_enemies.emplace_back(Vec2(150.f, 150.f), 0);
 	_enemies.emplace_back(Vec2(350.f, 250.f), 0);
 	_enemies.emplace_back(Vec2(250.f, 750.f), 0);
+}
+
+void Game::shoot()
+{
+	const sf::Vector2f& playerPos =
+		_player.getPosition();
+
+	float playerAngle =
+		_player.getAngle();
+
+	// =============================
+	// GET WALL DISTANCE
+	// =============================
+
+	const std::vector<float>& depthBuffer =
+		Raycaster::getDepthBuffer();
+
+	int centerRay =
+		SCREEN_WIDTH / 2;
+
+	if (centerRay < 0 ||
+		centerRay >= static_cast<int>(depthBuffer.size()))
+	{
+		return;
+	}
+
+	float wallDistance =
+		depthBuffer[centerRay];
+
+	// =============================
+	// FIND ENEMY IN CROSSHAIR
+	// =============================
+
+	Enemy* closestEnemy = nullptr;
+
+	float closestDistance = wallDistance;
+
+	for (Enemy& enemy : _enemies)
+	{
+		if (!enemy.isAlive())
+			continue;
+
+		const sf::Vector2f& enemyPos =
+			enemy.getPosition();
+
+		float dx =
+			enemyPos.x - playerPos.x;
+
+		float dy =
+			enemyPos.y - playerPos.y;
+
+		float distance =
+			std::sqrt(dx * dx + dy * dy);
+
+		float enemyAngle =
+			std::atan2(dy, dx);
+
+		float angleDifference =
+			enemyAngle - playerAngle;
+
+		// Normalize angle
+		while (angleDifference > PI)
+			angleDifference -= 2.f * PI;
+
+		while (angleDifference < -PI)
+			angleDifference += 2.f * PI;
+
+		// =============================
+		// IS ENEMY NEAR CROSSHAIR?
+		// =============================
+
+		constexpr float HIT_ANGLE = 0.08f;
+
+		if (std::abs(angleDifference) < HIT_ANGLE)
+		{
+			// Fix fisheye distance
+			float correctedDistance =
+				distance *
+				std::cos(angleDifference);
+
+			// Enemy must be BEFORE wall
+			if (correctedDistance < wallDistance)
+			{
+				if (correctedDistance < closestDistance)
+				{
+					closestDistance =
+						correctedDistance;
+
+					closestEnemy =
+						&enemy;
+				}
+			}
+		}
+	}
+
+	// =============================
+	// DAMAGE ENEMY
+	// =============================
+
+	if (closestEnemy != nullptr)
+	{
+		closestEnemy->takeDamage(50);
+
+		std::cout
+			<< "Enemy HIT!"
+			<< std::endl;
+	}
+	else
+	{
+		std::cout
+			<< "Miss!"
+			<< std::endl;
+	}
 }
 
 void Game::run(int fps)
@@ -73,9 +191,9 @@ void Game::run(int fps)
 		sf::Vector2i mousePosition = sf::Mouse::getPosition(_window);
 
 		int mouseDeltaX = mousePosition.x - windowCenter.x;
-		//int mouseDeltaY = mousePosition.y - windowCenter.y;
+		int mouseDeltaY = mousePosition.y - windowCenter.y;
 
-		_player.handleMouse(static_cast<float>(mouseDeltaX), 0);
+		_player.handleMouse(static_cast<float>(mouseDeltaX), static_cast<float>(mouseDeltaY));
 
 		sf::Mouse::setPosition(windowCenter, _window);
 
@@ -85,6 +203,11 @@ void Game::run(int fps)
 			update(frameTime.asSeconds());
 			updates++;
 			accumulator -= frameTime;
+		}
+
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			_player.shoot();
 		}
 
 		float horizon = SCREEN_HEIGHT / 2.f + _player.getPitch();
@@ -103,11 +226,20 @@ void Game::run(int fps)
 			horizon
 		);
 
+		if (_player.consumeShot())
+		{
+			shoot();
+		}
+
 		for (Enemy& enemy : _enemies)
 		{
 			enemy.setPlayerPos(_player.getPosition(), _player.getAngle());
 			enemy.update(frameTime.asSeconds(), horizon);
 		}
+
+		_player.renderWeapon();
+
+		Render::drawCrosshair();
 
 		render();
 		frames++;

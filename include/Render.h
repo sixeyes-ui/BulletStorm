@@ -12,6 +12,7 @@ public:
 
 	static void setPixel(int x, int y, const sf::Color& color);
 	static void loadTextures();
+	static void drawCrosshair();
 
 	static sf::Image& getScreen() { return _screen; }
 	

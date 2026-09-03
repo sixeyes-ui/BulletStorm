@@ -12,9 +12,11 @@ class Game
 public:
 	Game();
 
+	void shoot();
 	void run(int fps = 60);
 
 private:
+
 	void update(float deltaTime);
 	void render();
 

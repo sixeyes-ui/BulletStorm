@@ -40,6 +40,49 @@ void Render::clear()
 	}
 }
 
+void Render::drawCrosshair()
+{
+	int centerX = _width / 2;
+	int centerY = _height / 2;
+
+	sf::Color color = sf::Color::White;
+
+	const int size = 10;
+	const int gap = 3;
+
+	// Left
+	for (int x = centerX - gap - size;
+		x < centerX - gap;
+		x++)
+	{
+		setPixel(x, centerY, color);
+	}
+
+	// Right
+	for (int x = centerX + gap;
+		x < centerX + gap + size;
+		x++)
+	{
+		setPixel(x, centerY, color);
+	}
+
+	// Top
+	for (int y = centerY - gap - size;
+		y < centerY - gap;
+		y++)
+	{
+		setPixel(centerX, y, color);
+	}
+
+	// Bottom
+	for (int y = centerY + gap;
+		y < centerY + gap + size;
+		y++)
+	{
+		setPixel(centerX, y, color);
+	}
+}
+
 void Render::setPixel(int x, int y, const sf::Color& color)
 {
 	if (x < 0 || x >= _width ||

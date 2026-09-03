@@ -24,6 +24,12 @@ void Raycaster::castRays(const sf::Vector2f& position, float angle, float horizo
 	_angleStep = FOV / (_numRays - 1);
 	_rayAngle = angle - FOV / 2.f;
 
+	std::fill(
+		_depthBuffer.begin(),
+		_depthBuffer.end(),
+		999999.f
+	);
+
 	for (int ray = 0; ray < _numRays; ray++)
 	{
 		float rayDirX = std::cos(_rayAngle);
@@ -32,8 +38,18 @@ void Raycaster::castRays(const sf::Vector2f& position, float angle, float horizo
 		int mapX = static_cast<int>(position.x / 32);
 		int mapY = static_cast<int>(position.y / 32);
 
-		float deltaDistX = std::abs(32.f / rayDirX);
-		float deltaDistY = std::abs(32.f / rayDirY);
+		//float deltaDistX = std::abs(32.f / rayDirX);
+		//float deltaDistY = std::abs(32.f / rayDirY);
+
+		float deltaDistX =
+			(std::abs(rayDirX) < 0.0001f)
+			? 1e30f
+			: std::abs(32.f / rayDirX);
+
+		float deltaDistY =
+			(std::abs(rayDirY) < 0.0001f)
+			? 1e30f
+			: std::abs(32.f / rayDirY);
 
 		int stepX;
 		int stepY;

@@ -142,6 +142,7 @@
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Raycaster.cpp" />
     <ClCompile Include="src\Render.cpp" />
+    <ClCompile Include="src\SoundManager.cpp" />
     <ClCompile Include="src\SpriteRenderer.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\Vec2.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="include\Player.h" />
     <ClInclude Include="include\Raycaster.h" />
     <ClInclude Include="include\Render.h" />
+    <ClInclude Include="include\SoundManager.h" />
     <ClInclude Include="include\SpriteRenderer.h" />
     <ClInclude Include="include\Texture.h" />
     <ClInclude Include="include\Vec2.h" />
@@ -161,8 +163,19 @@
   <ItemGroup>
     <Image Include="assets\DFrame0.png" />
     <Image Include="assets\ground.png" />
+    <Image Include="assets\gun1.png" />
+    <Image Include="assets\gun2.png" />
     <Image Include="assets\Player.png" />
     <Image Include="assets\wall.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="assets\dead.mp3" />
+    <Media Include="assets\enemy_hurt.wav" />
+    <Media Include="assets\shoot.wav" />
+    <Media Include="assets\walk.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\backGroundSound.ogg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
