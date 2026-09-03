@@ -153,6 +153,7 @@
     <ClInclude Include="include\Game.h" />
     <ClInclude Include="include\Map.h" />
     <ClInclude Include="include\Player.h" />
+    <ClInclude Include="include\random.h" />
     <ClInclude Include="include\Raycaster.h" />
     <ClInclude Include="include\Render.h" />
     <ClInclude Include="include\SoundManager.h" />

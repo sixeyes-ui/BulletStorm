@@ -3,6 +3,7 @@
 #include "include/Texture.h"
 #include "include/Render.h"
 #include "include/SoundManager.h"
+#include "include/random.h"
 #include <iostream>
 #include <cmath>
 
@@ -21,21 +22,10 @@ Game::Game() :
 	SoundManager::init();
 	SoundManager::playMusic();
 
-	_enemies.emplace_back(Vec2(600.f, 300.f), 0);
-	_enemies.emplace_back(Vec2(500.f, 400.f), 0);
-	_enemies.emplace_back(Vec2(700.f, 200.f), 0);
-	_enemies.emplace_back(Vec2(300.f, 400.f), 0);
-	_enemies.emplace_back(Vec2(200.f, 200.f), 0);
-	_enemies.emplace_back(Vec2(450.f, 500.f), 0);
-	_enemies.emplace_back(Vec2(600.f, 450.f), 0);
-	_enemies.emplace_back(Vec2(700.f, 350.f), 0);
-	_enemies.emplace_back(Vec2(250.f, 450.f), 0);
-	_enemies.emplace_back(Vec2(550.f, 150.f), 0);
-	_enemies.emplace_back(Vec2(520.f, 150.f), 0);
-	_enemies.emplace_back(Vec2(620.f, 150.f), 0);
-	_enemies.emplace_back(Vec2(150.f, 150.f), 0);
-	_enemies.emplace_back(Vec2(350.f, 250.f), 0);
-	_enemies.emplace_back(Vec2(250.f, 750.f), 0);
+	for (int i = 0; i < 50; i++)
+	{
+		_enemies.emplace_back(Vec2(random(0.f,(float)SCREEN_WIDTH), random(0.f, (float)SCREEN_HEIGHT)), 0);
+	}
 }
 
 void Game::shoot()
